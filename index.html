@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viral YouTube Hashtag & Tag Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff0000;
+            --primary-dark: #cc0000;
+            --secondary: #282828;
+            --light: #f9f9f9;
+            --dark: #212121;
+            --gray: #606060;
+            --light-gray: #e0e0e0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards 0.3s;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), #ff6b6b);
+            border-radius: 3px;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        .subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .tool-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 40px;
+            transform: scale(0.98);
+            transition: var(--transition);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+        }
+        
+        .tool-container:hover {
+            transform: scale(1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .input-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--secondary);
+            font-size: 0.95rem;
+        }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: rgba(255, 0, 0, 0.02);
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--primary), #ff6b6b);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: block;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(255, 0, 0, 0.2);
+        }
+        
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(30deg);
+            transition: var(--transition);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 0, 0, 0.3);
+        }
+        
+        button:hover::after {
+            left: 100%;
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .results {
+            margin-top: 30px;
+            display: none;
+            animation: fadeIn 0.6s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .result-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 0, 0, 0.05);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .result-box:nth-child(1) {
+            animation: fadeInUp 0.5s forwards 0.2s;
+        }
+        
+        .result-box:nth-child(2) {
+            animation: fadeInUp 0.5s forwards 0.4s;
+        }
+        
+        .result-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+        
+        .result-title svg {
+            margin-right: 10px;
+            filter: drop-shadow(0 2px 2px rgba(255, 0, 0, 0.2));
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tag {
+            background-color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            transition: var(--transition);
+            animation: tagPopIn 0.3s forwards;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        @keyframes tagPopIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .tag:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 8px rgba(255, 0, 0, 0.1);
+            border-color: rgba(255, 0, 0, 0.3);
+        }
+        
+        .copy-btn {
+            background: linear-gradient(135deg, var(--primary), #ff6b6b);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 12px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: 0 2px 3px rgba(255, 0, 0, 0.2);
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(255, 0, 0, 0.3);
+        }
+        
+        .copy-all {
+            margin-top: 20px;
+            background: linear-gradient(135deg, var(--secondary), #424242);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .copy-all:hover {
+            background: linear-gradient(135deg, #424242, #212121);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: fadeIn 0.4s forwards;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading p {
+            color: var(--gray);
+            font-weight: 300;
+            font-size: 1rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 0, 0, 0.1);
+            opacity: 0;
+            animation: fadeIn 0.6s forwards 0.8s;
+        }
+        
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            border-radius: 50%;
+            filter: blur(20px);
+        }
+        
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--primary), transparent 70%);
+            top: -100px;
+            left: -100px;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #ff6b6b, transparent 70%);
+            bottom: -50px;
+            right: -50px;
+            animation: float 12s infinite ease-in-out reverse;
+        }
+        
+        .shape-3 {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #ff9e9e, transparent 70%);
+            top: 30%;
+            right: 10%;
+            animation: float 18s infinite ease-in-out 2s;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(20px, 20px);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4);
+            }
+            70% {
+                transform: scale(1.02);
+                box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tool-container {
+                padding: 20px;
+            }
+            
+            .result-box {
+                padding: 15px;
+            }
+            
+            .tag {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>YouTube Hashtag & Tag Generator</h1>
+            <p class="subtitle">Boost your video's visibility with trending, SEO-optimized hashtags and tags</p>
+        </header>
+        
+        <div class="tool-container pulse">
+            <div class="input-group">
+                <label for="video-title">Your Video Title</label>
+                <input type="text" id="video-title" placeholder="E.g., Easy Chocolate Cake Recipe in 5 Minutes">
+            </div>
+            
+            <div class="input-group">
+                <label for="video-description">Video Description (Optional)</label>
+                <textarea id="video-description" placeholder="Briefly describe your video content..."></textarea>
+            </div>
+            
+            <button id="generate-btn">
+                <span>Generate Hashtags & Tags</span>
+            </button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Generating optimized hashtags and tags...</p>
+            </div>
+            
+            <div class="results" id="results">
+                <div class="result-box">
+                    <h3 class="result-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#FF0000">
+                            <path d="M7 13h10v-2H7v2zm0 4h7v-2H7v2zm0-10v2h10V7H7zm12-4H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                        </svg>
+                        Trending Hashtags
+                    </h3>
+                    <div class="tags-container" id="hashtags-container"></div>
+                    <button class="copy-btn copy-all" onclick="copyToClipboard('hashtags-container')">Copy All Hashtags</button>
+                </div>
+                
+                <div class="result-box">
+                    <h3 class="result-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#FF0000">
+                            <path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16zM16 17H5V7h11l3.55 5L16 17z"/>
+                        </svg>
+                        SEO-Optimized Tags
+                    </h3>
+                    <div class="tags-container" id="tags-container"></div>
+                    <button class="copy-btn copy-all" onclick="copyToClipboard('tags-container')">Copy All Tags</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Use these hashtags and tags in your YouTube video description to increase visibility and engagement.</p>
+            <p>© 2023 YouTube Tag Generator Tool | Not affiliated with YouTube</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generate-btn');
+            const videoTitleInput = document.getElementById('video-title');
+            const videoDescriptionInput = document.getElementById('video-description');
+            const loadingElement = document.getElementById('loading');
+            const resultsElement = document.getElementById('results');
+            
+            // Add animation to input focus
+            videoTitleInput.addEventListener('focus', function() {
+                this.parentNode.style.transform = 'translateY(-3px)';
+            });
+            
+            videoTitleInput.addEventListener('blur', function() {
+                this.parentNode.style.transform = 'translateY(0)';
+            });
+            
+            videoDescriptionInput.addEventListener('focus', function() {
+                this.parentNode.style.transform = 'translateY(-3px)';
+            });
+            
+            videoDescriptionInput.addEventListener('blur', function() {
+                this.parentNode.style.transform = 'translateY(0)';
+            });
+            
+            generateBtn.addEventListener('click', function() {
+                const title = videoTitleInput.value.trim();
+                
+                if (!title) {
+                    // Shake animation for error
+                    videoTitleInput.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        videoTitleInput.style.animation = '';
+                    }, 500);
+                    return;
+                }
+                
+                // Show loading spinner
+                loadingElement.style.display = 'block';
+                resultsElement.style.display = 'none';
+                
+                // Button click animation
+                this.style.transform = 'scale(0.98)';
+                
+                // Simulate processing delay
+                setTimeout(function() {
+                    generateTags(title, videoDescriptionInput.value.trim());
+                    loadingElement.style.display = 'none';
+                    resultsElement.style.display = 'block';
+                }, 1000 + Math.random() * 500); // Random delay for realism
+            });
+            
+            // Add CSS for shake animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    20%, 60% { transform: translateX(-5px); }
+                    40%, 80% { transform: translateX(5px); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+        
+        function generateTags(title, description) {
+            // Extract keywords from title and description
+            const keywords = extractKeywords(title + ' ' + description);
+            
+            // Generate hashtags
+            const hashtags = generateHashtags(keywords);
+            displayTags(hashtags, 'hashtags-container', true);
+            
+            // Generate tags
+            const tags = generateSeoTags(keywords);
+            displayTags(tags, 'tags-container', false);
+            
+            // Add confetti effect on completion
+            showConfetti();
+        }
+        
+        function extractKeywords(text) {
+            // Remove special characters and convert to lowercase
+            const cleanedText = text.replace(/[^\w\s]/gi, '').toLowerCase();
+            
+            // Split into words and remove common stop words
+            const words = cleanedText.split(/\s+/);
+            const stopWords = ['a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'how', 'what', 'when', 'where', 'why', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'can', 'could', 'will', 'would', 'shall', 'should', 'may', 'might', 'must', 'your', 'my', 'our', 'their', 'this', 'that', 'these', 'those'];
+            
+            // Filter out stop words and short words
+            const keywords = words.filter(word => 
+                word.length > 2 && !stopWords.includes(word)
+            );
+            
+            // Get unique keywords
+            return [...new Set(keywords)];
+        }
+        
+        function generateHashtags(keywords) {
+            const trendingHashtags = [
+                '#viral', '#trending', '#youtube', '#video', '#subscribe', 
+                '#newvideo', '#youtuber', '#youtubechannel', '#youtubevideos',
+                '#vlog', '#contentcreator', '#creator', '#digitalcreator',
+                '#watchnow', '#clickbait', '#mustwatch', '#recommended',
+                '#shorts', '#youtubeshorts', '#viralshorts', '#trendingshorts',
+                '#explore', '#discover', '#algorithm', '#youtubealgorithm'
+            ];
+            
+            // Create hashtags from keywords
+            const keywordHashtags = keywords.map(word => '#' + word.replace(/\s+/g, ''));
+            
+            // Combine with trending hashtags and limit to 30
+            const allHashtags = [...new Set([...keywordHashtags, ...trendingHashtags])];
+            return allHashtags.slice(0, 30);
+        }
+        
+        function generateSeoTags(keywords) {
+            const commonTags = [
+                'youtube', 'video', 'vlog', 'content', 'creator', 
+                'entertainment', 'education', 'tutorial', 'howto',
+                'tips', 'tricks', 'guide', 'explained', 'review',
+                'reaction', 'trending', 'viral', 'new', 'latest',
+                '2023', 'hd', '4k', 'subscribe', 'like', 'comment',
+                'share', 'watch', 'view', 'youtuber', 'channel',
+                'shortvideo', 'shorts', 'videoshort', 'short',
+                'algorithm', 'youtubealgorithm', 'seo', 'youtubeseo'
+            ];
+            
+            // Combine keywords with common tags and limit to 50
+            const allTags = [...new Set([...keywords, ...commonTags])];
+            return allTags.slice(0, 50);
+        }
+        
+        function displayTags(tags, containerId, isHashtag) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            tags.forEach((tag, index) => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag';
+                tagElement.textContent = tag;
+                tagElement.style.animationDelay = `${index * 0.05}s`;
+                
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.textContent = 'Copy';
+                copyBtn.onclick = function() {
+                    copyToClipboardText(tag);
+                    this.textContent = 'Copied!';
+                    setTimeout(() => {
+                        this.textContent = 'Copy';
+                    }, 2000);
+                };
+                
+                tagElement.appendChild(copyBtn);
+                container.appendChild(tagElement);
+            });
+        }
+        
+        function copyToClipboard(containerId) {
+            const container = document.getElementById(containerId);
+            const tags = Array.from(container.querySelectorAll('.tag'))
+                .map(tag => tag.textContent.replace('Copy', '').trim())
+                .join(', ');
+            
+            copyToClipboardText(tags);
+            
+            // Show feedback
+            const buttons = document.querySelectorAll(`#${containerId} + .copy-all`);
+            buttons.forEach(button => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+            
+            // Show mini confetti for copy action
+            showMiniConfetti(buttons[0]);
+        }
+        
+        function copyToClipboardText(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+        
+        function showConfetti() {
+            // Create temporary canvas for confetti
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '1000';
+            document.body.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const particles = [];
+            const colors = ['#ff0000', '#ff6b6b', '#ff9e9e', '#ffd3d3'];
+            
+            // Create particles
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 3,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 3 + 2,
+                    angle: Math.random() * Math.PI * 2,
+                    rotation: Math.random() * 0.2 - 0.1,
+                    rotationSpeed: Math.random() * 0.01 - 0.005
+                });
+            }
+            
+            let animationId;
+            const animate = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                let stillAlive = false;
+                
+                particles.forEach(p => {
+                    p.y += p.speed;
+                    p.x += Math.sin(p.angle) * 0.5;
+                    p.angle += p.rotation;
+                    
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotationSpeed * Date.now());
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+                    ctx.restore();
+                    
+                    if (p.y < canvas.height) {
+                        stillAlive = true;
+                    }
+                });
+                
+                if (stillAlive) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    cancelAnimationFrame(animationId);
+                    canvas.remove();
+                }
+            };
+            
+            animate();
+        }
+        
+        function showMiniConfetti(element) {
+            const rect = element.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            for (let i = 0; i < 10; i++) {
+                createConfettiParticle(x, y);
+            }
+        }
+        
+        function createConfettiParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.style.position = 'fixed';
+            particle.style.width = '8px';
+            particle.style.height = '8px';
+            particle.style.backgroundColor = ['#ff0000', '#ff6b6b', '#ff9e9e'][Math.floor(Math.random() * 3)];
+            particle.style.borderRadius = '50%';
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '1000';
+            particle.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(particle);
+            
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 2 + Math.random() * 3;
+            const lifetime = 1000 + Math.random() * 500;
+            
+            let posX = 0;
+            let posY = 0;
+            const startTime = Date.now();
+            
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = elapsed / lifetime;
+                
+                if (progress >= 1) {
+                    particle.remove();
+                    return;
+                }
+                
+                posX += Math.cos(angle) * velocity;
+                posY += Math.sin(angle) * velocity + progress * 2; // Add gravity
+                
+                particle.style.opacity = 1 - progress;
+                particle.style.transform = `translate(-50%, -50%) translate(${posX}px, ${posY}px) rotate(${progress * 360}deg)`;
+                
+                requestAnimationFrame(animate);
+            };
+            
+            animate();
+        }
+    </script>
+</body>
+</html>
